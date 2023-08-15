@@ -1,9 +1,9 @@
 import React from "react";
-import WebCamera from "../components/WebCamera";
+import WebcamDemo from "../components/WebcamDemo";
 function HomePage() {
   return (
     <div>
-      <WebCamera />
+      <WebcamDemo />
     </div>
   );
 }
