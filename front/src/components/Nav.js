@@ -1,10 +1,10 @@
 import React from "react";
 import { BrowserRouter, NavLink, Routes, Route } from "react-router-dom";
 import "./Nav.css";
-import ContactPage from "./pages/ContactPage";
-import BoardPage from "./pages/BoardPage";
-import ChatPage from "./pages/ChatPage";
-import HomePage from "./pages/HomePage";
+import ContactPage from "../pages/ContactPage";
+import BoardPage from "../pages/BoardPage";
+import ChatPage from "../pages/ChatPage";
+import HomePage from "../pages/HomePage";
 
 function Nav() {
   return (
@@ -28,7 +28,7 @@ function Nav() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/board" element={<BoardPage />} />
         <Route path="/chat" element={<ChatPage />} />
-        <Route path="/chat" element={<HomePage />} />
+        <Route path="/home" element={<HomePage />} />
       </Routes>
     </BrowserRouter>
   );
