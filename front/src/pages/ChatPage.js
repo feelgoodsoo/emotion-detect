@@ -1,15 +1,26 @@
 import "./ChatPage.css";
-import { useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { sendMessageToOpenAI } from "../api/gptRequest";
+import { useLocation } from "react-router-dom";
+import { useRecoilValue, useRecoilState } from "recoil";
+import { autoPromt } from "../states/atoms";
 
 function ChatPage() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState("");
+  const location = useLocation();
+  const advice = useRecoilValue(autoPromt);
+  const [alreadyTake, setAlreadyTake] = useState(false);
+
+  const scrollRef = useRef(null);
 
   //console.log("env name: ", process.env.REACT_APP_OPENAI_API_KEY);
 
   const handleMessageSubmit = async () => {
-    const response = await sendMessageToOpenAI(input);
+    if (input == "") {
+      return;
+    }
+    const response = "hello from bot"; //await sendMessageToOpenAI(input);
     setMessages([
       ...messages,
       { text: input, isUser: true },
@@ -17,6 +28,23 @@ function ChatPage() {
     ]);
     setInput("");
   };
+
+  const detectEnter = (e) => {
+    if (e.key == "Enter") {
+      handleMessageSubmit();
+    }
+  };
+
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  useState(() => {
+    if (advice !== null && !alreadyTake) {
+      setInput(advice);
+      setAlreadyTake(true);
+    }
+  }, []);
 
   return (
     <div className="page_Container">
@@ -31,6 +59,7 @@ function ChatPage() {
               </div>
             ))
           : null}
+        <div ref={scrollRef}></div>
       </div>
 
       <div className="input-container">
@@ -38,7 +67,10 @@ function ChatPage() {
           className="input"
           tpye="text"
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e) => {
+            setInput(e.target.value);
+          }}
+          onKeyDown={detectEnter}
         />
         <button className="button" onClick={handleMessageSubmit}>
           Send

@@ -1,0 +1,75 @@
+.camera {
+  width: 100%;
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+img {
+  border: 3px solid #fff;
+  border-radius: 3px;
+}
+
+.btn-container {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn {
+  background-color: #5454bd;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 16px 14px 18px;
+  min-height: 30px;
+  min-width: 120px;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  border-radius: 500px;
+  border: 1px solid transparent;
+  letter-spacing: 2px;
+}
+
+.btn:hover {
+  background-color: #002ead;
+  transition: 0.7s;
+}
+
+p.scroll_down {
+  font-family: "Trebuchet MS", Tahoma, sans-serif;
+  font-size: 25px;
+  color: rgb(78, 78, 78);
+}
+.camera__wrapper {
+  position: relative;
+  width: 80%;
+  max-width: 680px;
+  margin: 0 1rem 1rem;
+}
+
+.camera__wrapper video {
+  border: 3px solid #fff;
+  border-radius: 3px;
+}
+
+.webcam-overlay {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.webcam-overlay--hidden {
+  display: none;
+}
+
+@media only screen and (min-width: 768px) {
+  .camera__wrapper {
+    width: 100%;
+    margin: 0 1rem 1rem;
+  }
+}
