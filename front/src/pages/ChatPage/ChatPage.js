@@ -3,7 +3,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { sendMessageToOpenAI } from "../../api/gptRequest";
 import { useLocation } from "react-router-dom";
 import { useRecoilValue, useRecoilState } from "recoil";
-import { autoPromt } from "../../states/atoms";
+import { authTokens, autoPromt } from "../../states/atoms";
 
 function ChatPage() {
   const [input, setInput] = useState("");
@@ -11,7 +11,7 @@ function ChatPage() {
   const location = useLocation();
   const advice = useRecoilValue(autoPromt);
   const [alreadyTake, setAlreadyTake] = useState(false);
-
+  const userInfo = JSON.parse(localStorage.getItem("authTokens"));
   const scrollRef = useRef(null);
 
   //console.log("env name: ", process.env.REACT_APP_OPENAI_API_KEY);
@@ -20,11 +20,33 @@ function ChatPage() {
     if (input == "") {
       return;
     }
-    const response = "hello from bot"; //await sendMessageToOpenAI(input);
+
+    // jango로 post 후 res 받아오기
+    let response = await fetch("http://127.0.0.1:8000/api/chat/post/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${parsedAccessToken}`,
+      },
+      body: JSON.stringify({
+        user_id: userInfo.user.username,
+        content: input,
+      }),
+    });
+
+    let data = await response.json();
+    console.log("res data: ", data);
+
+    //const response = "hello from bot"; //await sendMessageToOpenAI(input);
+    // setMessages([
+    //   ...messages,
+    //   { text: input, isUser: true },
+    //   { text: response, isUser: false },
+    // ]);
     setMessages([
       ...messages,
       { text: input, isUser: true },
-      { text: response, isUser: false },
+      { text: data.text, isUser: data.isUser },
     ]);
     setInput("");
   };
@@ -55,7 +77,7 @@ function ChatPage() {
         Authorization: `Bearer ${parsedAccessToken}`,
       },
       body: JSON.stringify({
-        user_id: "test1213",
+        user_id: userInfo.user.username,
       }),
     });
 
@@ -67,6 +89,7 @@ function ChatPage() {
       setMessages(data);
     }
   };
+
   useEffect(() => {
     fetchMessages();
     if (advice !== null && !alreadyTake) {
@@ -90,7 +113,7 @@ function ChatPage() {
           : null}
         <div ref={scrollRef}></div>
       </div>
-      <footer className="input-container">
+      <div className="input-container">
         <input
           className="input"
           type="text"
@@ -104,7 +127,7 @@ function ChatPage() {
         {/* <button className="button" onClick={handleMessageSubmit}>
           Send
         </button> */}
-      </footer>
+      </div>
     </div>
   );
 }

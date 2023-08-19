@@ -40,7 +40,8 @@ def ChatHandler(request):
             messages=messages
         )
 
-        chat_response = completion.choices[0].message.content
+        # completion.choices[0].message.content
+        chat_response = "hello from jango"
         # print(f'ChatGPT: {chat_response}')
 
         # response 객체 생성
@@ -89,11 +90,29 @@ def get_all_messages(request):
 
 class ChatView(APIView):
     def post(self, request, *args, **kwargs):
-        user_id = request.user.id  # 클라이언트 사용자의 ID
-        chats = Chats.objects.all()
+        print("req data: ", request.data)
+        user_id = request.data['user_id']  # 클라이언트 사용자의 ID
+        # print("user_id: ", user_id)
+
+        user_to_bot_chats = Chats.objects.filter(
+            sender_id=user_id, receiver_id='bot')
+        # print("user_to_bot_chats: ", user_to_bot_chats)
+
+        # sender가 Bot이면서 receiver가 userA인 경우 데이터 가져오기
+        bot_to_user_chats = Chats.objects.filter(
+            sender_id='bot', receiver_id=user_id)
+
+        # print("sender_bot: ", bot_to_user_chats)
+
+        # 두 QuerySet을 하나로 합치기
+        combined_chats = user_to_bot_chats | bot_to_user_chats
+
+        # 시간순으로 정렬
+        # sorted_chats = combined_chats.order_by('time_stamp')
+        print("sorted_chats: ", combined_chats)
 
         serializer = ChatsListSerializer(
-            chats,
+            combined_chats,
             many=True,
             context={'user_id': user_id}
         )
