@@ -1,7 +1,15 @@
 import React, { useEffect } from "react";
-import { Link, Routes, Route, useLocation } from "react-router-dom";
+import {
+  Link,
+  Routes,
+  Route,
+  useLocation,
+  redirect,
+  useNavigate,
+  Navigate,
+} from "react-router-dom";
 import "./Nav.css";
-import ContactPage from "../../pages/ContactPage/ContactPage";
+import UserPage from "../../pages/UserPage/UserPage";
 import BoardPage from "../../pages/BoardPage/BoardPage";
 import ChatPage from "../../pages//ChatPage/ChatPage";
 import HomePage from "../../pages/HomePage/HomePage";
@@ -13,6 +21,7 @@ import {
   autoPromt,
   faceImage,
   isCaptured,
+  authTokens,
 } from "../../states/atoms";
 
 function Nav() {
@@ -24,6 +33,9 @@ function Nav() {
   const [img, setImg] = useRecoilState(faceImage);
   const [capture, setCapture] = useRecoilState(isCaptured);
 
+  const token = useRecoilValue(authTokens);
+  let navigate = useNavigate();
+
   useEffect(() => {
     setCurrentLoc(location.pathname);
     //console.log("currentLoc in Nav: ", currentLoc);
@@ -34,12 +46,12 @@ function Nav() {
       <nav className="topnav">
         <Link
           className="link"
-          to="/contact"
+          to="/user"
           onClick={() => {
             setNeedStop(true);
           }}
         >
-          Contact
+          User
         </Link>
         <Link
           className="link"
@@ -74,10 +86,23 @@ function Nav() {
       </nav>
 
       <Routes>
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/board" element={<BoardPage />} />
-        <Route path="/chat" element={<ChatPage />} />
-        <Route path="/home" element={<HomePage />} />
+        <Route path="/" element={<AuthPage />}></Route>
+        <Route
+          path="/user"
+          element={!token ? <Navigate to="/" /> : <UserPage />}
+        />
+        <Route
+          path="/board"
+          element={!token ? <Navigate to="/" /> : <BoardPage />}
+        />
+        <Route
+          path="/chat"
+          element={!token ? <Navigate to="/" /> : <ChatPage />}
+        />
+        <Route
+          path="/home"
+          element={!token ? <Navigate to="/" /> : <HomePage />}
+        />
       </Routes>
     </>
   );

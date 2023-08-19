@@ -38,7 +38,7 @@ export const autoPromt = atom({
 
 export const authTokens = atom({
   key: "authTokens",
-  default: "",
+  default: localStorage.getItem("authTokens"),
 });
 
 export const test = atom({

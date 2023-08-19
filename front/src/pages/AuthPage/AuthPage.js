@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import "./AuthPage.css";
 import FormInput from "../../components/FormInput/FormInput";
-import { redirect } from "react-router-dom";
+import { redirect, useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { authTokens } from "../../states/atoms";
 const AuthPage = () => {
   const [values, setValues] = useState({
     username: "",
@@ -10,11 +12,15 @@ const AuthPage = () => {
     confirmPassword: "",
   });
 
-  const [tokens, setTokens] = useState(() =>
-    localStorage.getItem("authTokens")
-      ? JSON.parse(localStorage.getItem("authTokens"))
-      : null
-  );
+  let navigate = useNavigate();
+
+  // const [tokens, setTokens] = useState(() =>
+  //   localStorage.getItem("authTokens")
+  //     ? JSON.parse(localStorage.getItem("authTokens"))
+  //     : null
+  // );
+
+  const [tokens, setTokens] = useRecoilState(authTokens);
 
   const [registerMode, setRegisterMode] = useState(false);
 
@@ -137,13 +143,20 @@ const AuthPage = () => {
       localStorage.setItem("authTokens", JSON.stringify(data));
       setTokens(data);
       console.log("login success");
-      redirect("/chat");
+      return navigate("/chat");
     }
   };
 
   const handleRegister = (e) => {
     e.preventDefault();
     RegRequest();
+    setRegisterMode(false);
+    setValues({
+      username: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    });
   };
 
   const handleLogin = (e) => {

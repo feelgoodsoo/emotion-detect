@@ -3,19 +3,16 @@ import Nav from "./components/Navbar/Nav";
 import "./App.css";
 import { loadModels } from "./api/faceApi";
 import { createFaLibrary } from "./utils/icons";
-import { Route, redirect, Routes } from "react-router-dom";
+import { Route, redirect, Routes, useNavigate } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { authTokens } from "./states/atoms";
 import AuthPage from "./pages/AuthPage/AuthPage";
+
 createFaLibrary();
 loadModels();
 function App() {
-  let [tokens, setTokens] = useState(() =>
-    localStorage.getItem("authTokens")
-      ? JSON.parse(localStorage.getItem("authTokens"))
-      : null
-  );
-
+  let [tokens, setTokens] = useState(authTokens);
+  let navigate = useNavigate();
   const updateToken = async () => {
     let response = await fetch(
       "http://127.0.0.1:8000/dj-rest-auth/token/refresh/",
@@ -37,6 +34,7 @@ function App() {
   };
 
   useEffect(() => {
+    //console.log("app use effect called");
     if (tokens) {
       let fourMinutes = 1000 * 60 * 25;
 
@@ -51,13 +49,14 @@ function App() {
 
   return (
     <>
-      {tokens ? (
+      {/* {tokens ? (
         <Nav />
       ) : (
         <Routes>
           <Route path="/" element={<AuthPage />} />
         </Routes>
-      )}
+      )} */}
+      <Nav />
     </>
   );
 }
