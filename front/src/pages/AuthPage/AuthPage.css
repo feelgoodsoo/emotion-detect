@@ -3,11 +3,12 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background: linear-gradient(
-      rgba(255, 255, 255, 0.7),
-      rgba(255, 255, 255, 0.3)
-    ),
-    url("https://images.pexels.com/photos/114979/pexels-photo-114979.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500");
+  background: radial-gradient(
+    circle,
+    rgba(253, 254, 236, 1) 24%,
+    rgba(252, 255, 254, 1) 72%
+  );
+
   background-size: cover;
   background-position: center;
 }

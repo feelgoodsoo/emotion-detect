@@ -36,6 +36,11 @@ export const autoPromt = atom({
   default: "hello from prompt",
 });
 
+export const authTokens = atom({
+  key: "authTokens",
+  default: "",
+});
+
 export const test = atom({
   key: "test",
   default: "test123",

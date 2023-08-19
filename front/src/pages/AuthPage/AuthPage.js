@@ -1,17 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./AuthPage.css";
 import FormInput from "../../components/FormInput/FormInput";
-
+import { redirect } from "react-router-dom";
 const AuthPage = () => {
   const [values, setValues] = useState({
     username: "",
     email: "",
-    birthday: "",
     password: "",
     confirmPassword: "",
   });
 
-  const inputs = [
+  const [tokens, setTokens] = useState(() =>
+    localStorage.getItem("authTokens")
+      ? JSON.parse(localStorage.getItem("authTokens"))
+      : null
+  );
+
+  const [registerMode, setRegisterMode] = useState(false);
+
+  const RegisterInputs = [
     {
       id: 1,
       name: "username",
@@ -31,13 +38,6 @@ const AuthPage = () => {
       errorMessage: "It should be a valid email address!",
       label: "Email",
       required: true,
-    },
-    {
-      id: 3,
-      name: "birthday",
-      type: "date",
-      placeholder: "Birthday",
-      label: "Birthday",
     },
     {
       id: 4,
@@ -62,8 +62,93 @@ const AuthPage = () => {
     },
   ];
 
-  const handleSubmit = (e) => {
+  const LoginInputs = [
+    {
+      id: 1,
+      name: "username",
+      type: "text",
+      placeholder: "Username",
+      label: "Username",
+      required: true,
+    },
+    {
+      id: 2,
+      name: "email",
+      type: "email",
+      placeholder: "Email",
+      label: "Email",
+      required: true,
+    },
+    {
+      id: 3,
+      name: "password",
+      type: "password",
+      placeholder: "Password",
+      label: "Password",
+      required: true,
+    },
+  ];
+
+  const RegRequest = async () => {
+    let response = await fetch(
+      "http://127.0.0.1:8000/dj-rest-auth/registration/",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: values.username,
+          email: values.email,
+          password1: values.password,
+          password2: values.confirmPassword,
+        }),
+      }
+    );
+
+    let data = await response.json();
+    console.log("res data: ", data);
+
+    if (response.status === 200) {
+      // setAuthTokens(data)
+      // setUser(jwt_decode(data.access))
+      // localStorage.setItem('authTokens', JSON.stringify(data))
+      console.log("register success");
+    }
+  };
+
+  const LoginRequest = async () => {
+    let response = await fetch("http://127.0.0.1:8000/dj-rest-auth/login/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: values.username,
+        email: values.email,
+        password: values.password,
+      }),
+    });
+
+    let data = await response.json();
+    console.log("res data: ", data);
+
+    if (response.status === 200) {
+      localStorage.setItem("authTokens", JSON.stringify(data));
+      setTokens(data);
+      console.log("login success");
+      redirect("/chat");
+    }
+  };
+
+  const handleRegister = (e) => {
     e.preventDefault();
+    RegRequest();
+  };
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    LoginRequest();
   };
 
   const onChange = (e) => {
@@ -72,18 +157,40 @@ const AuthPage = () => {
 
   return (
     <div className="app">
-      <form onSubmit={handleSubmit}>
-        <h1>Register</h1>
-        {inputs.map((input) => (
-          <FormInput
-            key={input.id}
-            {...input}
-            value={values[input.name]}
-            onChange={onChange}
-          />
-        ))}
-        <button>Submit</button>
-      </form>
+      {registerMode ? (
+        <form onSubmit={handleRegister}>
+          <h1>Register</h1>
+          {RegisterInputs.map((input) => (
+            <FormInput
+              key={input.id}
+              {...input}
+              value={values[input.name]}
+              onChange={onChange}
+            />
+          ))}
+          <button>Submit</button>
+        </form>
+      ) : (
+        <form>
+          <h1>Login</h1>
+          {LoginInputs.map((input) => (
+            <FormInput
+              key={input.id}
+              {...input}
+              value={values[input.name]}
+              onChange={onChange}
+            />
+          ))}
+          <button onClick={handleLogin}>Sign in</button>
+          <button
+            onClick={() => {
+              setRegisterMode(true);
+            }}
+          >
+            Sign up
+          </button>
+        </form>
+      )}
     </div>
   );
 };

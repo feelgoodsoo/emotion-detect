@@ -39,7 +39,36 @@ function ChatPage() {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  useState(() => {
+  const parsedAccessToken = JSON.parse(
+    localStorage.getItem("authTokens")
+  ).access;
+
+  // console.log(
+  //   "access token: ",
+  //   JSON.parse(localStorage.getItem("authTokens")).access
+  // );
+  const fetchMessages = async () => {
+    let response = await fetch("http://127.0.0.1:8000/api/chat/list/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${parsedAccessToken}`,
+      },
+      body: JSON.stringify({
+        user_id: "test1213",
+      }),
+    });
+
+    let data = await response.json();
+    console.log("res data: ", data);
+
+    if (response.status === 200) {
+      console.log("fetch success");
+      setMessages(data);
+    }
+  };
+  useEffect(() => {
+    fetchMessages();
     if (advice !== null && !alreadyTake) {
       setInput(advice);
       setAlreadyTake(true);

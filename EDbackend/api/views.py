@@ -88,7 +88,7 @@ def get_all_messages(request):
 
 
 class ChatView(APIView):
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         user_id = request.user.id  # 클라이언트 사용자의 ID
         chats = Chats.objects.all()
 

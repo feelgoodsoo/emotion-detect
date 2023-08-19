@@ -78,7 +78,6 @@ function Nav() {
         <Route path="/board" element={<BoardPage />} />
         <Route path="/chat" element={<ChatPage />} />
         <Route path="/home" element={<HomePage />} />
-        <Route path="/auth" element={<AuthPage />} />
       </Routes>
     </>
   );
