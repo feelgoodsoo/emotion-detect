@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { test } from "../states/atoms";
+import { test } from "../../states/atoms";
 import { useNavigate } from "react-router-dom";
+
 function ContactPage() {
   const navigate = useNavigate();
   const [isTrue, setIsTrue] = useState(false);

@@ -23,7 +23,7 @@ const Camera = () => {
   const navigate = useNavigate();
 
   async function getFaces() {
-    console.log("getFaces is called");
+    //console.log("getFaces is called");
 
     if (camera.current !== null) {
       try {
@@ -53,14 +53,18 @@ const Camera = () => {
       return;
     }
     if (!photo && camera !== null) {
-      const drawOverlay = () => {
-        getFaces();
-      };
-      const loopCall = setInterval(drawOverlay, 200);
-      return () => {
-        //clearOverlay(cameraCanvas);
-        clearInterval(loopCall);
-      };
+      try {
+        const drawOverlay = () => {
+          getFaces();
+        };
+        const loopCall = setInterval(drawOverlay, 200);
+        return () => {
+          //clearOverlay(cameraCanvas);
+          clearInterval(loopCall);
+        };
+      } catch (e) {
+        console.error("camera useEffect error occured: ", e);
+      }
     } else {
       //return clearOverlay(cameraCanvas);
     }

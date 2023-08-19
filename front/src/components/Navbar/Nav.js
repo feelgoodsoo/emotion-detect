@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
 import { Link, Routes, Route, useLocation } from "react-router-dom";
 import "./Nav.css";
-import ContactPage from "../../pages/ContactPage";
-import BoardPage from "../../pages/BoardPage";
-import ChatPage from "../../pages/ChatPage";
-import HomePage from "../../pages/HomePage";
+import ContactPage from "../../pages/ContactPage/ContactPage";
+import BoardPage from "../../pages/BoardPage/BoardPage";
+import ChatPage from "../../pages//ChatPage/ChatPage";
+import HomePage from "../../pages/HomePage/HomePage";
+import AuthPage from "../../pages/AuthPage/AuthPage";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
   currentLocation,
@@ -77,6 +78,7 @@ function Nav() {
         <Route path="/board" element={<BoardPage />} />
         <Route path="/chat" element={<ChatPage />} />
         <Route path="/home" element={<HomePage />} />
+        <Route path="/auth" element={<AuthPage />} />
       </Routes>
     </>
   );

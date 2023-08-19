@@ -1,9 +1,9 @@
 import "./ChatPage.css";
 import { useEffect, useState, useRef, useCallback } from "react";
-import { sendMessageToOpenAI } from "../api/gptRequest";
+import { sendMessageToOpenAI } from "../../api/gptRequest";
 import { useLocation } from "react-router-dom";
 import { useRecoilValue, useRecoilState } from "recoil";
-import { autoPromt } from "../states/atoms";
+import { autoPromt } from "../../states/atoms";
 
 function ChatPage() {
   const [input, setInput] = useState("");
@@ -30,7 +30,7 @@ function ChatPage() {
   };
 
   const detectEnter = (e) => {
-    if (e.key == "Enter") {
+    if (e.key == "Enter" && e.nativeEvent.isComposing === false) {
       handleMessageSubmit();
     }
   };
@@ -61,21 +61,21 @@ function ChatPage() {
           : null}
         <div ref={scrollRef}></div>
       </div>
-
-      <div className="input-container">
+      <footer className="input-container">
         <input
           className="input"
-          tpye="text"
+          type="text"
+          placeholder="ask me anything..."
           value={input}
           onChange={(e) => {
             setInput(e.target.value);
           }}
           onKeyDown={detectEnter}
         />
-        <button className="button" onClick={handleMessageSubmit}>
+        {/* <button className="button" onClick={handleMessageSubmit}>
           Send
-        </button>
-      </div>
+        </button> */}
+      </footer>
     </div>
   );
 }

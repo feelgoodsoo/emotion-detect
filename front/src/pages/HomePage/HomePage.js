@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Camera from "../components/Camera/Camera";
+import Camera from "../../components/Camera/Camera";
 import "./HomePage.css";
-import Results from "../components/Results/Results";
-import Prompts from "../utils/Promts";
+import Results from "../../components/Results/Results";
+import Prompts from "../../utils/Promts";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
   detectResult,
@@ -11,7 +11,7 @@ import {
   needDetectStop,
   isHome,
   autoPromt,
-} from "../states/atoms";
+} from "../../states/atoms";
 
 function HomePage({ camStop }) {
   const detectResponse = useRecoilValue(detectResult);
@@ -45,7 +45,7 @@ function HomePage({ camStop }) {
 
   useEffect(() => {
     setHome(true);
-    console.log("useEffect rendered in homepage");
+    //console.log("useEffect rendered in homepage");
   }, [captured, needStop]);
 
   return (
@@ -53,7 +53,7 @@ function HomePage({ camStop }) {
       <header>
         <div className="App__header">
           <h1>
-            <span className="title">Show your Emotion</span>
+            <div className="title">Show your Emotion</div>
           </h1>
         </div>
       </header>
