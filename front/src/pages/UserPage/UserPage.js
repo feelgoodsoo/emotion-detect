@@ -7,8 +7,7 @@ function UserPage() {
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useRecoilState(authTokens);
 
-  console.log(typeof userInfo);
-  //console.log(userInfo);
+  //console.log(typeof userInfo);
 
   const logoutHandler = async () => {
     console.log("logout button clicked");
@@ -19,8 +18,18 @@ function UserPage() {
 
   return (
     <>
-      <div>username : {userInfo?.user?.username}</div>
-      <div>email : {userInfo?.user?.email}</div>
+      <div>
+        username :{" "}
+        {typeof userInfo == "string"
+          ? JSON.parse(userInfo).user.username
+          : userInfo.user.username}
+      </div>
+      <div>
+        email :{" "}
+        {typeof userInfo == "string"
+          ? JSON.parse(userInfo).user.email
+          : userInfo.user.email}
+      </div>
       <button onClick={logoutHandler}>Logout</button>
     </>
   );

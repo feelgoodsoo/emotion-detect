@@ -1,13 +1,14 @@
-from django.shortcuts import render
+from django.http import JsonResponse
+from django.shortcuts import render, get_object_or_404
+from rest_framework import serializers
 from rest_framework.decorators import api_view, APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import ChatSerializer, ChatsListSerializer
-from .models import Chats
+from .serializers import ChatSerializer, ChatsListSerializer, BoardSerializer
+from .models import Chats, Board
 from django.utils import timezone
 from utils.envHandler import getEnvAttr
 import openai
-import json
 # Create your views here.
 
 
@@ -24,7 +25,7 @@ def ChatHandler(request):
 
         # DB에 저장할 객체 생성
         chatObj = Chats(sender_id=user_id, receiver_id="bot",
-                        content=content, time_stamp=timezone.now())
+                        content=content)  # time_stamp=timezone.now()
 
         # DB에 저장
         chatObj.save()
@@ -46,7 +47,7 @@ def ChatHandler(request):
 
         # response 객체 생성
         resObj = Chats(sender_id="bot", receiver_id=user_id,
-                       content=chat_response, time_stamp=timezone.now())
+                       content=chat_response)  # time_stamp=timezone.now()
 
         # DB 저장
         resObj.save()
@@ -56,39 +57,11 @@ def ChatHandler(request):
         return Response(status=status.HTTP_200_OK, data=resForFront)
 
 
-@api_view(['GET'])
-def get_all_messages(request):
+class ChatView(APIView):
 
     # sender가 userA이면서 receiver가 Bot인 경우와 sender가 Bot이면서 receiver가 userA인경우.. Query
     # (sender == userA && receiver == Bot || sender == Bot && receiver == userA)
 
-    user_id = request.data['user_id']
-    print("user_id: ", user_id)
-    # return Response(status=status.HTTP_200_OK, data="id test")
-
-    # sender가 userA이면서 receiver가 Bot인 경우 데이터 가져오기
-    user_to_bot_chats = Chats.objects.filter(
-        sender_id=user_id, receiver_id='bot')
-
-    # sender가 Bot이면서 receiver가 userA인 경우 데이터 가져오기
-    bot_to_user_chats = Chats.objects.filter(
-        sender_id='bot', receiver_id=user_id)
-
-    # 두 QuerySet을 하나로 합치기
-    combined_chats = user_to_bot_chats | bot_to_user_chats
-
-    # 시간순으로 정렬
-    sorted_chats = combined_chats.order_by('time_stamp')
-    print("sorted_chats: ", sorted_chats)
-
-    # [
-    # { "text" : "i am hungry", "isUser" : true },
-    # { "text" : "what can i help you?", "isUser" : false}
-    # ]
-    return Response(status=status.HTTP_200_OK, data="hello")
-
-
-class ChatView(APIView):
     def post(self, request, *args, **kwargs):
         print("req data: ", request.data)
         user_id = request.data['user_id']  # 클라이언트 사용자의 ID
@@ -117,3 +90,58 @@ class ChatView(APIView):
             context={'user_id': user_id}
         )
         return Response(serializer.data)
+
+
+@api_view(['GET'])
+def getBoardList(request):
+    # get one board by board id
+    posts = Board.objects.all()
+    serializedData = BoardSerializer(posts, many=True)
+    return Response(serializedData.data)
+
+
+@api_view(["GET"])
+def getBoardById(request, boardId):
+    try:
+        board = get_object_or_404(Board, id=boardId)
+        board = BoardSerializer(board)
+        return Response(board.data)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@api_view(['POST'])
+def getBoardByWriter(request):
+    wrtier = request.data['writer']
+
+    try:
+        board = Board.objects.filter(writer=wrtier)
+
+        jsonData = BoardSerializer(board, many=True)
+        return Response(jsonData.data)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@api_view(["POST"])
+def writeBoard(request):
+    reqData = BoardSerializer(data=request.data)
+    if Board.objects.filter(**request.data).exists():
+        raise serializers.ValidationError('This data already exists')
+
+    if reqData.is_valid():
+        print("reqData: ", reqData)
+        reqData.save()
+        return Response(status=status.HTTP_200_OK, data="save success")
+    else:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(["POST"])
+def deleteBoardById(request, boardId):
+    try:
+        board = get_object_or_404(Board, id=boardId)
+        board.delete()
+        return Response("delete success")
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

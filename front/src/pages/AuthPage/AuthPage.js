@@ -194,8 +194,11 @@ const AuthPage = () => {
               onChange={onChange}
             />
           ))}
-          <button onClick={handleLogin}>Sign in</button>
+          <button className="auth-btn" onClick={handleLogin}>
+            Sign in
+          </button>
           <button
+            className="auth-btn"
             onClick={() => {
               setRegisterMode(true);
             }}

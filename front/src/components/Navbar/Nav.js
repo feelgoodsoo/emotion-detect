@@ -10,7 +10,7 @@ import {
 } from "react-router-dom";
 import "./Nav.css";
 import UserPage from "../../pages/UserPage/UserPage";
-import BoardPage from "../../pages/BoardPage/BoardPage";
+import BoardHomePage from "../../pages/BoardPage/BoardHomePage/BoardHomePage";
 import ChatPage from "../../pages//ChatPage/ChatPage";
 import HomePage from "../../pages/HomePage/HomePage";
 import AuthPage from "../../pages/AuthPage/AuthPage";
@@ -23,6 +23,10 @@ import {
   isCaptured,
   authTokens,
 } from "../../states/atoms";
+import BoardPostPage from "../../pages/BoardPage/BoardPostPage/BoardPostPage";
+import BoardMyPostPage from "../../pages/BoardPage/BoardMyPostPage/BoardMyPostPage";
+import BoardDetailPage from "../../pages/BoardPage/BoardDetailPage/BoardDetailPage";
+import BoardUpdatePage from "../../pages/BoardPage/BoardUpdatePage/BoardUpdatePage";
 
 function Nav() {
   const location = useLocation();
@@ -93,8 +97,17 @@ function Nav() {
         />
         <Route
           path="/board"
-          element={!token ? <Navigate to="/" /> : <BoardPage />}
+          element={!token ? <Navigate to="/" /> : <BoardHomePage />}
         />
+        <Route
+          path="/board/post"
+          element={!token ? <Navigate to="/" /> : <BoardPostPage />}
+        />
+        <Route
+          path="/board/mypost"
+          element={!token ? <Navigate to="/" /> : <BoardMyPostPage />}
+        />
+
         <Route
           path="/chat"
           element={!token ? <Navigate to="/" /> : <ChatPage />}
@@ -102,6 +115,14 @@ function Nav() {
         <Route
           path="/home"
           element={!token ? <Navigate to="/" /> : <HomePage />}
+        />
+        <Route
+          path="/board/:id"
+          element={!token ? <Navigate to="/" /> : <BoardDetailPage />}
+        />
+        <Route
+          path="/update/:id"
+          element={!token ? <Navigate to="/" /> : <BoardUpdatePage />}
         />
       </Routes>
     </>

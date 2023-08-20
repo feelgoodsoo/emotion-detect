@@ -1,8 +1,8 @@
-from .models import Chats
+from .models import Chats, Board
 from rest_framework import serializers
 
 
-class ChatSerializer(serializers.Serializer):
+class ChatSerializer(serializers.ModelSerializer):
     user_id = serializers.CharField()
     content = serializers.CharField(style={'base_template': 'textarea.html'})
 
@@ -19,3 +19,9 @@ class ChatsListSerializer(serializers.ModelSerializer):
         if self.context.get('user_id') == obj.sender_id:
             return True
         return False
+
+
+class BoardSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Board
+        fields = "__all__"
