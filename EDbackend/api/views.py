@@ -9,6 +9,7 @@ from .models import Chats, Board
 from django.utils import timezone
 from utils.envHandler import getEnvAttr
 import openai
+from django.db.models import Q
 # Create your views here.
 
 
@@ -124,7 +125,7 @@ def getBoardByWriter(request):
 
 
 @api_view(["POST"])
-def writeBoard(request):
+def createBoard(request):
     reqData = BoardSerializer(data=request.data)
     if Board.objects.filter(**request.data).exists():
         raise serializers.ValidationError('This data already exists')
@@ -138,10 +139,37 @@ def writeBoard(request):
 
 
 @api_view(["POST"])
+def updateBoard(request, boardId):
+
+    board = Board.objects.get(id=boardId)
+    reqData = BoardSerializer(instance=board, data=request.data)
+
+    if reqData.is_valid():
+        print("updated reqData: ", reqData)
+        reqData.save()
+        return Response(status=status.HTTP_200_OK, data="update success")
+    else:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(["POST"])
 def deleteBoardById(request, boardId):
     try:
         board = get_object_or_404(Board, id=boardId)
         board.delete()
         return Response("delete success")
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@api_view(["GET"])
+def searchByKeyword(reuqest, keyword):
+    try:
+        keyword = keyword.strip()  # 앞뒤 공백을 제거합니다.
+        boards = Board.objects.filter(
+            Q(title__icontains=keyword) | Q(content__icontains=keyword))
+
+        jsonData = BoardSerializer(boards, many=True)
+        return Response(jsonData.data)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)

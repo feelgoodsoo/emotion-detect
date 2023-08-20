@@ -41,6 +41,11 @@ export const authTokens = atom({
   default: localStorage.getItem("authTokens"),
 });
 
+export const keywordForSearch = atom({
+  key: "searchKeyword",
+  default: "",
+});
+
 export const test = atom({
   key: "test",
   default: "test123",

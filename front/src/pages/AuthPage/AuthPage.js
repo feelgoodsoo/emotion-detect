@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./AuthPage.css";
 import FormInput from "../../components/FormInput/FormInput";
-import { redirect, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { authTokens } from "../../states/atoms";
 const AuthPage = () => {
@@ -171,8 +171,8 @@ const AuthPage = () => {
   return (
     <div className="app">
       {registerMode ? (
-        <form onSubmit={handleRegister}>
-          <h1>Register</h1>
+        <form className="frm" onSubmit={handleRegister}>
+          <h1 className="title">Register</h1>
           {RegisterInputs.map((input) => (
             <FormInput
               key={input.id}

@@ -23,10 +23,11 @@ import {
   isCaptured,
   authTokens,
 } from "../../states/atoms";
-import BoardPostPage from "../../pages/BoardPage/BoardPostPage/BoardPostPage";
+import BoardCreatePage from "../../pages/BoardPage/BoardCreatePage/BoardCreatePage";
 import BoardMyPostPage from "../../pages/BoardPage/BoardMyPostPage/BoardMyPostPage";
 import BoardDetailPage from "../../pages/BoardPage/BoardDetailPage/BoardDetailPage";
 import BoardUpdatePage from "../../pages/BoardPage/BoardUpdatePage/BoardUpdatePage";
+import BoardSearchPage from "../../pages/BoardPage/BoardSearchPage/BoardSearchPage";
 
 function Nav() {
   const location = useLocation();
@@ -101,7 +102,7 @@ function Nav() {
         />
         <Route
           path="/board/post"
-          element={!token ? <Navigate to="/" /> : <BoardPostPage />}
+          element={!token ? <Navigate to="/" /> : <BoardCreatePage />}
         />
         <Route
           path="/board/mypost"
@@ -123,6 +124,14 @@ function Nav() {
         <Route
           path="/update/:id"
           element={!token ? <Navigate to="/" /> : <BoardUpdatePage />}
+        />
+        <Route
+          path="/update/:id"
+          element={!token ? <Navigate to="/" /> : <BoardUpdatePage />}
+        />
+        <Route
+          path="/search"
+          element={!token ? <Navigate to="/" /> : <BoardSearchPage />}
         />
       </Routes>
     </>

@@ -1,54 +1,58 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { keywordForSearch } from "../../../states/atoms";
 
 function BoardHomePage() {
-  const navigte = useNavigate();
+  const navigate = useNavigate();
+  const userInfo = localStorage.getItem("authTokens");
+  const parsedAccessToken = JSON.parse(userInfo).access;
+  const [keyword, setKeyword] = useState("");
+  const [board, setBoard] = useState([]);
+  const [searchKeyword, setSearchKeyword] = useRecoilState(keywordForSearch);
 
-  let sample = [
-    {
-      id: "1",
-      title: "test1",
-      content: "content1",
-      username: "heesoo",
-    },
-    {
-      id: "2",
-      title: "test2",
-      content: "content2",
-      username: "gosoo",
-    },
-    {
-      id: "3",
-      title: "test3",
-      content: "content3",
-      username: "hasoo",
-    },
-    {
-      id: "4",
-      title: "test4",
-      content: "content4",
-      username: "hyunsoo",
-    },
-    {
-      id: "5",
-      title: "test5",
-      content: "content5",
-      username: "goosoo",
-    },
-  ];
+  //console.log(parsedAccessToken);
+  const getBoard = async () => {
+    let response = await fetch(`http://127.0.0.1:8000/api/board/get/list/`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${parsedAccessToken}`,
+      },
+    });
+
+    let data = await response.json();
+    //console.log("res data: ", data);
+
+    if (response.status === 200) {
+      console.log("fetch success");
+      setBoard(data);
+    }
+  };
+
+  useEffect(() => {
+    getBoard();
+    setSearchKeyword("");
+  }, []);
+
+  const search = async () => {
+    setSearchKeyword(keyword);
+    navigate("/search");
+  };
+
   return (
     <>
-      <input></input>
-      <button>search</button>
-      <button onClick={() => navigte("/board/post")}>post</button>
-      <button onClick={() => navigte("/board/mypost")}>myPost</button>
+      <input onChange={(e) => setKeyword(e.target.value)}></input>
+      <button onClick={search}>search</button>
+      <button onClick={() => navigate("/board/post")}>create</button>
+      <button onClick={() => navigate("/board/mypost")}>myPost</button>
       <h1>post list</h1>
       <ol>
-        {sample.map((board) => (
+        {board.map((board) => (
           <li key={board.id}>
             <Link to={`/board/${board.id}`}>
-              제목: {board.title} 작성자: {board.username}{" "}
+              제목: {board.title} 작성자: {board.writer}
             </Link>
           </li>
         ))}
