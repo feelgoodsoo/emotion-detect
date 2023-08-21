@@ -13,7 +13,7 @@ import {
   autoPromt,
 } from "../../states/atoms";
 
-function HomePage({ camStop }) {
+function HomePage() {
   const detectResponse = useRecoilValue(detectResult);
   const captured = useRecoilValue(isCaptured);
   const [home, setHome] = useRecoilState(isHome);

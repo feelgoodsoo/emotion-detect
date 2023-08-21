@@ -46,6 +46,11 @@ export const keywordForSearch = atom({
   default: "",
 });
 
+export const isAuthenticated = atom({
+  key: "authChecker",
+  default: false,
+});
+
 export const test = atom({
   key: "test",
   default: "test123",

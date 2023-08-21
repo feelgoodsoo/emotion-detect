@@ -4,6 +4,7 @@ import { sendMessageToOpenAI } from "../../api/gptRequest";
 import { useLocation } from "react-router-dom";
 import { useRecoilValue, useRecoilState } from "recoil";
 import { authTokens, autoPromt } from "../../states/atoms";
+import { simpleFetch, urls } from "../../utils/utilsBundle";
 
 function ChatPage() {
   const [input, setInput] = useState("");
@@ -11,7 +12,8 @@ function ChatPage() {
   const location = useLocation();
   const advice = useRecoilValue(autoPromt);
   const [alreadyTake, setAlreadyTake] = useState(false);
-  const userInfo = JSON.parse(localStorage.getItem("authTokens"));
+  const authToken = localStorage.getItem("accessToken");
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const scrollRef = useRef(null);
 
   //console.log("env name: ", process.env.REACT_APP_OPENAI_API_KEY);
@@ -20,29 +22,15 @@ function ChatPage() {
     if (input == "") {
       return;
     }
-
-    // jango로 post 후 res 받아오기
-    let response = await fetch("http://127.0.0.1:8000/api/chat/post/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${parsedAccessToken}`,
-      },
-      body: JSON.stringify({
-        user_id: userInfo.user.username,
+    let data = await simpleFetch(
+      urls.chatSendPath,
+      "POST",
+      JSON.stringify({
+        user_id: userInfo.username,
         content: input,
       }),
-    });
-
-    let data = await response.json();
-    console.log("res data: ", data);
-
-    //const response = "hello from bot"; //await sendMessageToOpenAI(input);
-    // setMessages([
-    //   ...messages,
-    //   { text: input, isUser: true },
-    //   { text: response, isUser: false },
-    // ]);
+      authToken
+    );
     setMessages([
       ...messages,
       { text: input, isUser: true },
@@ -57,39 +45,24 @@ function ChatPage() {
     }
   };
 
+  // for chat scroll
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const parsedAccessToken = JSON.parse(
-    localStorage.getItem("authTokens")
-  ).access;
-
-  // console.log(
-  //   "access token: ",
-  //   JSON.parse(localStorage.getItem("authTokens")).access
-  // );
   const fetchMessages = async () => {
-    let response = await fetch("http://127.0.0.1:8000/api/chat/list/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${parsedAccessToken}`,
-      },
-      body: JSON.stringify({
-        user_id: userInfo.user.username,
+    let data = await simpleFetch(
+      urls.chatListPath,
+      "POST",
+      JSON.stringify({
+        user_id: userInfo.username,
       }),
-    });
-
-    let data = await response.json();
-    console.log("res data: ", data);
-
-    if (response.status === 200) {
-      console.log("fetch success");
-      setMessages(data);
-    }
+      authToken
+    );
+    setMessages(data);
   };
 
+  // for fetch messages
   useEffect(() => {
     fetchMessages();
     if (advice !== null && !alreadyTake) {

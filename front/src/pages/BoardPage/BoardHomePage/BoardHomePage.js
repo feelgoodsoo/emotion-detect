@@ -1,32 +1,34 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { keywordForSearch } from "../../../states/atoms";
+import { TextField, Button, Box } from "@mui/material";
+import { simpleFetch, urls } from "../../../utils/utilsBundle";
+import { accessToken } from "../../../utils/utilsBundle";
+import SimpleTable from "../../../components/SimpleTable/SimpleTable";
 
 function BoardHomePage() {
   const navigate = useNavigate();
-  const userInfo = localStorage.getItem("authTokens");
-  const parsedAccessToken = JSON.parse(userInfo).access;
+  //console.log("accessToken in BoardHome: ", accessToken);
   const [keyword, setKeyword] = useState("");
   const [board, setBoard] = useState([]);
   const [searchKeyword, setSearchKeyword] = useRecoilState(keywordForSearch);
 
-  //console.log(parsedAccessToken);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   const getBoard = async () => {
-    let response = await fetch(`http://127.0.0.1:8000/api/board/get/list/`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${parsedAccessToken}`,
-      },
-    });
-
-    let data = await response.json();
-    //console.log("res data: ", data);
-
-    if (response.status === 200) {
-      console.log("fetch success");
+    let data = await simpleFetch(urls.boardListPath, "GET", "", accessToken);
+    if (data) {
       setBoard(data);
     }
   };
@@ -37,26 +39,54 @@ function BoardHomePage() {
   }, []);
 
   const search = async () => {
+    if (keyword == "") {
+      return;
+    }
     setSearchKeyword(keyword);
     navigate("/search");
   };
 
   return (
     <>
-      <input onChange={(e) => setKeyword(e.target.value)}></input>
-      <button onClick={search}>search</button>
-      <button onClick={() => navigate("/board/post")}>create</button>
-      <button onClick={() => navigate("/board/mypost")}>myPost</button>
-      <h1>post list</h1>
-      <ol>
-        {board.map((board) => (
-          <li key={board.id}>
-            <Link to={`/board/${board.id}`}>
-              제목: {board.title} 작성자: {board.writer}
-            </Link>
-          </li>
-        ))}
-      </ol>
+      <Box textAlign="center" sx={{ mt: 5, mb: 5 }}>
+        <TextField
+          onChange={(e) => setKeyword(e.target.value)}
+          size="small"
+          sx={{
+            width: "20%",
+            mr: 2,
+          }}
+          placeholder="검색어를 입력하세요."
+        />
+        <Button
+          onClick={search}
+          variant="contained"
+          sx={{ mb: 3, width: "10%" }}
+        >
+          search
+        </Button>
+        <Button
+          onClick={() => navigate("/board/post")}
+          variant="contained"
+          sx={{ ml: 3, mb: 3, width: "10%" }}
+        >
+          create
+        </Button>
+        <Button
+          onClick={() => navigate("/board/mypost")}
+          variant="contained"
+          sx={{ ml: 3, mb: 3, width: "10%" }}
+        >
+          myposts
+        </Button>
+      </Box>
+      <SimpleTable
+        board={board}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        handleChangePage={handleChangePage}
+        handleChangeRowsPerPage={handleChangeRowsPerPage}
+      />
     </>
   );
 }

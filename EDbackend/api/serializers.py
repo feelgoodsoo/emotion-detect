@@ -2,11 +2,6 @@ from .models import Chats, Board
 from rest_framework import serializers
 
 
-class ChatSerializer(serializers.ModelSerializer):
-    user_id = serializers.CharField()
-    content = serializers.CharField(style={'base_template': 'textarea.html'})
-
-
 class ChatsListSerializer(serializers.ModelSerializer):
     text = serializers.CharField(source='content')
     isUser = serializers.SerializerMethodField()

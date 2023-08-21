@@ -1,37 +1,40 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router";
-import { Link } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { keywordForSearch } from "../../../states/atoms";
+import { simpleFetch, urls } from "../../../utils/utilsBundle";
+import { accessToken } from "../../../utils/utilsBundle";
+import SimpleTable from "../../../components/SimpleTable/SimpleTable";
 
 function BoardSearchPage() {
-  const userInfo = JSON.parse(localStorage.getItem("authTokens"));
   const [searchData, setSearchData] = useState([]);
   const keyword = useRecoilValue(keywordForSearch);
 
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   const search = async () => {
-    let response = await fetch(
-      `http://127.0.0.1:8000/api/board/get/searchByKeyword/${keyword}/`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${userInfo.access}`,
-        },
-      }
+    let data = await simpleFetch(
+      urls.boardSearchPath + `${keyword}/`,
+      "GET",
+      "",
+      accessToken
     );
-
-    let data = await response.json();
-    //console.log("res data: ", data);
-
-    if (response.status === 200) {
-      console.log("search success");
+    if (data) {
       setSearchData(data);
     }
   };
 
   useEffect(() => {
-    console.log("keyword: ", keyword);
+    //console.log("keyword: ", keyword);
     if (keyword) {
       search();
     }
@@ -39,16 +42,14 @@ function BoardSearchPage() {
 
   return (
     <>
-      <h1>searched post list</h1>
-      <ol>
-        {searchData.map((board) => (
-          <li key={board.id}>
-            <Link to={`/board/${board.id}`}>
-              제목: {board.title} 작성자: {board.writer}
-            </Link>
-          </li>
-        ))}
-      </ol>
+      <h1 style={{ textAlign: "center" }}>searched posts</h1>
+      <SimpleTable
+        board={searchData}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        handleChangePage={handleChangePage}
+        handleChangeRowsPerPage={handleChangeRowsPerPage}
+      />
     </>
   );
 }

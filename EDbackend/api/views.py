@@ -4,9 +4,8 @@ from rest_framework import serializers
 from rest_framework.decorators import api_view, APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import ChatSerializer, ChatsListSerializer, BoardSerializer
+from .serializers import ChatsListSerializer, BoardSerializer
 from .models import Chats, Board
-from django.utils import timezone
 from utils.envHandler import getEnvAttr
 import openai
 from django.db.models import Q
@@ -17,12 +16,12 @@ from django.db.models import Q
 def ChatHandler(request):
 
     # front로부터 전달받은 chat 객체 parsing
-    chat = ChatSerializer(data=request.data)
+    chat = request.data
 
-    if chat.is_valid():
-        print("requested chat: ", chat.data)
-        user_id = chat.data['user_id']
-        content = chat.data['content']
+    try:
+        print("requested chat: ", chat)
+        user_id = chat['user_id']
+        content = chat['content']
 
         # DB에 저장할 객체 생성
         chatObj = Chats(sender_id=user_id, receiver_id="bot",
@@ -56,6 +55,8 @@ def ChatHandler(request):
         # response 객체 생성 후 전달. text 수정 필요
         resForFront = {'text': chat_response, 'isUser': False}
         return Response(status=status.HTTP_200_OK, data=resForFront)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 class ChatView(APIView):
@@ -127,6 +128,7 @@ def getBoardByWriter(request):
 @api_view(["POST"])
 def createBoard(request):
     reqData = BoardSerializer(data=request.data)
+
     if Board.objects.filter(**request.data).exists():
         raise serializers.ValidationError('This data already exists')
 
@@ -135,6 +137,7 @@ def createBoard(request):
         reqData.save()
         return Response(status=status.HTTP_200_OK, data="save success")
     else:
+        print("error occured")
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 

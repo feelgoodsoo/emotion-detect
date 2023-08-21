@@ -1,31 +1,32 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
-
+import { simpleFetch, urls } from "../../../utils/utilsBundle";
+import { accessToken, userInfo } from "../../../utils/utilsBundle";
+import SimpleTable from "../../../components/SimpleTable/SimpleTable";
 function BoardMyPostPage() {
-  const navigate = useNavigate();
-  const userInfo = JSON.parse(localStorage.getItem("authTokens"));
   const [board, setBoard] = useState([]);
 
-  const getBoard = async () => {
-    let response = await fetch(
-      `http://127.0.0.1:8000/api/board/get/bywriter/`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${userInfo.access}`,
-        },
-        body: JSON.stringify({
-          writer: userInfo.user.username,
-        }),
-      }
-    );
-    let data = await response.json();
-    console.log("res data: ", data);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
-    if (response.status === 200) {
-      console.log("fetch success");
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const getBoard = async () => {
+    let data = await simpleFetch(
+      urls.boardGetByWriterPath,
+      "POST",
+      JSON.stringify({
+        writer: userInfo.username,
+      }),
+      accessToken
+    );
+    if (data) {
       setBoard(data);
     }
   };
@@ -36,16 +37,14 @@ function BoardMyPostPage() {
 
   return (
     <>
-      <h1>post list</h1>
-      <ol>
-        {board.map((board) => (
-          <li key={board.id}>
-            <Link to={`/board/${board.id}`}>
-              제목: {board.title} 작성자: {board.writer}
-            </Link>
-          </li>
-        ))}
-      </ol>
+      <h1 style={{ textAlign: "center" }}>my posts</h1>
+      <SimpleTable
+        board={board}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        handleChangePage={handleChangePage}
+        handleChangeRowsPerPage={handleChangeRowsPerPage}
+      />
     </>
   );
 }

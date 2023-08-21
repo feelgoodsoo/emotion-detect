@@ -1,27 +1,22 @@
 import React, { useEffect, useState } from "react";
 import Board from "../../../components/Board/Board";
 import { useNavigate, useParams } from "react-router-dom";
-
+import { Button, Box } from "@mui/material";
+import { simpleFetch, urls } from "../../../utils/utilsBundle";
+import { accessToken, userInfo } from "../../../utils/utilsBundle";
 function BoardDetailPage() {
   const { id } = useParams();
   const [board, setBoard] = useState({});
   const navigate = useNavigate();
-  const userInfo = JSON.parse(localStorage.getItem("authTokens"));
 
   const getBoard = async () => {
-    let response = await fetch(`http://127.0.0.1:8000/api/board/get/${id}/`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userInfo.access}`,
-      },
-    });
-
-    let data = await response.json();
-    console.log("res data: ", data);
-
-    if (response.status === 200) {
-      console.log("fetch success");
+    let data = await simpleFetch(
+      urls.boardGetByIdPath + `${id}/`,
+      "GET",
+      "",
+      accessToken
+    );
+    if (data) {
       setBoard(data);
     }
   };
@@ -31,23 +26,15 @@ function BoardDetailPage() {
   }, []);
 
   const deleteBoard = async () => {
-    if (window.confirm("게시글 삭제할거야?")) {
-      let response = await fetch(
-        `http://127.0.0.1:8000/api/board/post/delete/${id}/`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${userInfo.access}`,
-          },
-        }
+    if (window.confirm("게시글을 삭제하시겠습니까?")) {
+      let data = await simpleFetch(
+        urls.boardDeletePath + `${id}/`,
+        "POST",
+        "",
+        accessToken
       );
-      let data = await response.json();
-      console.log("res data: ", data);
-
-      if (response.status === 200) {
-        console.log("delete success");
-        setBoard(data);
+      if (data) {
+        alert("게시글이 삭제되었습니다");
         navigate("/board");
       }
     }
@@ -59,18 +46,35 @@ function BoardDetailPage() {
 
   return (
     <>
-      <h1>게시판 상세 보기</h1>
-      <div>
+      <div style={{ marginTop: "50px" }}>
         <Board
           id={board.id}
           title={board.title}
           content={board.content}
           writer={board.writer}
+          time_stamp={board.time_stamp}
         />
-        {board.writer === userInfo.user.username ? (
+        {board.writer === userInfo.username ? (
           <>
-            (<button onClick={updateBoard}>수정</button>
-            <button onClick={deleteBoard}>삭제</button>)
+            <Box textAlign="center">
+              <Button
+                onClick={updateBoard}
+                variant="contained"
+                sx={{ mt: 3, mb: 3, width: "15%" }}
+              >
+                update
+              </Button>
+
+              <Button
+                onClick={deleteBoard}
+                variant="contained"
+                sx={{ mt: 3, ml: 3, mb: 3, width: "15%" }}
+              >
+                delete
+              </Button>
+            </Box>
+            {/* <button onClick={updateBoard}>수정</button>
+            <button onClick={deleteBoard}>삭제</button> */}
           </>
         ) : null}
       </div>

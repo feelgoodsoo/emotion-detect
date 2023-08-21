@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { TextField } from "@mui/material";
+import { Button, Box } from "@mui/material";
+import {
+  accessToken,
+  simpleFetch,
+  urls,
+  userInfo,
+} from "../../../utils/utilsBundle";
 
 function BoardUpdatePage() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const userInfo = JSON.parse(localStorage.getItem("authTokens"));
 
   const [board, setBoard] = useState({
     id: 0,
@@ -14,51 +21,36 @@ function BoardUpdatePage() {
   });
 
   const getBoard = async () => {
-    let response = await fetch(`http://127.0.0.1:8000/api/board/get/${id}/`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userInfo.access}`,
-      },
-    });
-
-    let data = await response.json();
-    console.log("res data: ", data);
-
-    if (response.status === 200) {
-      console.log("fetch success");
+    let data = await simpleFetch(
+      urls.boardGetByIdPath + `${id}/`,
+      "GET",
+      "",
+      accessToken
+    );
+    if (data) {
       setBoard(data);
     }
   };
 
   const updateBoard = async () => {
-    const params = {
-      id: `${board.id}`,
-      title: `${board.title}`,
-      content: `${board.content}`,
-      writer: `${userInfo.user.username}`,
-    };
-    console.log("updated params: ", params);
-    let response = await fetch(
-      `http://127.0.0.1:8000/api/board/post/update/${board.id}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${userInfo.access}`,
-        },
-        body: JSON.stringify(params),
+    if (window.confirm("게시글을 수정하겠습니까?")) {
+      const params = {
+        id: `${board.id}`,
+        title: `${board.title}`,
+        content: `${board.content}`,
+        writer: `${userInfo.username}`,
+      };
+
+      let data = await simpleFetch(
+        urls.boardUpdateByIdPath + `${board.id}`,
+        "POST",
+        JSON.stringify(params),
+        accessToken
+      );
+      if (data) {
+        alert("수정되었습니다");
+        navigate(`/board/${id}`);
       }
-    );
-
-    let data = await response.json();
-    console.log("res data: ", data);
-
-    if (response.status === 200) {
-      console.log("update success");
-      setBoard("");
-      alert("수정되었다!");
-      navigate(`/board/${id}`);
     }
   };
 
@@ -69,6 +61,7 @@ function BoardUpdatePage() {
   }, []);
 
   const onChange = (event) => {
+    event.preventDefault();
     const { value, name } = event.target;
     setBoard({
       ...board,
@@ -81,26 +74,54 @@ function BoardUpdatePage() {
   };
 
   return (
-    <div>
-      <div>
-        <span>제목</span>
-        <input type="text" name="title" value={title} onChange={onChange} />
-      </div>
-      <br />
-      <div>
-        <span>내용</span>
-        <textarea
-          name="content"
-          cols="30"
-          rows="10"
-          value={content}
+    <>
+      <Box textAlign="center">
+        <TextField
+          name="title"
           onChange={onChange}
-        ></textarea>
+          multiline
+          defaultValue={title}
+          sx={{
+            mb: 3,
+            mt: 4,
+            width: "80%",
+          }}
+        />
+      </Box>
+
+      <div className="content-container">
+        <Box textAlign="center">
+          <TextField
+            name="content"
+            onChange={onChange}
+            multiline
+            rows={20}
+            defaultValue={content}
+            sx={{
+              mb: 3,
+              width: "80%",
+            }}
+          />
+        </Box>
+        <Box textAlign="center">
+          <Button
+            onClick={updateBoard}
+            variant="contained"
+            sx={{ mb: 3, width: "15%" }}
+          >
+            send
+          </Button>
+
+          <Button
+            onClick={backToDetail}
+            variant="contained"
+            sx={{ ml: 3, mb: 3, width: "15%" }}
+          >
+            cancel
+          </Button>
+        </Box>
       </div>
-      <br />
-      <button onClick={updateBoard}>수정</button>
-      <button onClick={backToDetail}>취소</button>
-    </div>
+    </>
   );
 }
 
