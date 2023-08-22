@@ -36,9 +36,9 @@ export const autoPromt = atom({
   default: "hello from prompt",
 });
 
-export const authTokens = atom({
+export const authToken = atom({
   key: "authTokens",
-  default: localStorage.getItem("authTokens"),
+  default: localStorage.getItem("accessToken"),
 });
 
 export const keywordForSearch = atom({

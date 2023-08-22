@@ -3,7 +3,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { sendMessageToOpenAI } from "../../api/gptRequest";
 import { useLocation } from "react-router-dom";
 import { useRecoilValue, useRecoilState } from "recoil";
-import { authTokens, autoPromt } from "../../states/atoms";
+import { autoPromt } from "../../states/atoms";
 import { simpleFetch, urls } from "../../utils/utilsBundle";
 
 function ChatPage() {
@@ -22,21 +22,26 @@ function ChatPage() {
     if (input == "") {
       return;
     }
-    let data = await simpleFetch(
-      urls.chatSendPath,
-      "POST",
-      JSON.stringify({
-        user_id: userInfo.username,
-        content: input,
-      }),
-      authToken
-    );
-    setMessages([
-      ...messages,
-      { text: input, isUser: true },
-      { text: data.text, isUser: data.isUser },
-    ]);
-    setInput("");
+    try {
+      let data = await simpleFetch(
+        urls.chatSendPath,
+        "POST",
+        JSON.stringify({
+          user_id: userInfo.username,
+          content: input,
+        }),
+        authToken
+      );
+      setMessages([
+        ...messages,
+        { text: input, isUser: true },
+        { text: data.text, isUser: data.isUser },
+      ]);
+      setInput("");
+    } catch (e) {
+      console.error(e);
+      alert("메시지를 전송하는 도중 에러가 발생하였습니다");
+    }
   };
 
   const detectEnter = (e) => {

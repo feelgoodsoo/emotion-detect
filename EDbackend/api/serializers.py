@@ -1,4 +1,4 @@
-from .models import Chats, Board
+from .models import Chats, Board, Comment
 from rest_framework import serializers
 
 
@@ -19,4 +19,10 @@ class ChatsListSerializer(serializers.ModelSerializer):
 class BoardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Board
+        fields = "__all__"
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
         fields = "__all__"

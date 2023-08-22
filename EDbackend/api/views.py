@@ -4,8 +4,8 @@ from rest_framework import serializers
 from rest_framework.decorators import api_view, APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import ChatsListSerializer, BoardSerializer
-from .models import Chats, Board
+from .serializers import ChatsListSerializer, BoardSerializer, CommentSerializer
+from .models import Chats, Board, Comment
 from utils.envHandler import getEnvAttr
 import openai
 from django.db.models import Q
@@ -19,7 +19,7 @@ def ChatHandler(request):
     chat = request.data
 
     try:
-        print("requested chat: ", chat)
+        # print("requested chat: ", chat)
         user_id = chat['user_id']
         content = chat['content']
 
@@ -65,41 +65,47 @@ class ChatView(APIView):
     # (sender == userA && receiver == Bot || sender == Bot && receiver == userA)
 
     def post(self, request, *args, **kwargs):
-        print("req data: ", request.data)
-        user_id = request.data['user_id']  # 클라이언트 사용자의 ID
-        # print("user_id: ", user_id)
+        try:
+            # print("req data: ", request.data)
+            user_id = request.data['user_id']  # 클라이언트 사용자의 ID
+            # print("user_id: ", user_id)
 
-        user_to_bot_chats = Chats.objects.filter(
-            sender_id=user_id, receiver_id='bot')
-        # print("user_to_bot_chats: ", user_to_bot_chats)
+            user_to_bot_chats = Chats.objects.filter(
+                sender_id=user_id, receiver_id='bot')
+            # print("user_to_bot_chats: ", user_to_bot_chats)
 
-        # sender가 Bot이면서 receiver가 userA인 경우 데이터 가져오기
-        bot_to_user_chats = Chats.objects.filter(
-            sender_id='bot', receiver_id=user_id)
+            # sender가 Bot이면서 receiver가 userA인 경우 데이터 가져오기
+            bot_to_user_chats = Chats.objects.filter(
+                sender_id='bot', receiver_id=user_id)
 
-        # print("sender_bot: ", bot_to_user_chats)
+            # print("sender_bot: ", bot_to_user_chats)
 
-        # 두 QuerySet을 하나로 합치기
-        combined_chats = user_to_bot_chats | bot_to_user_chats
+            # 두 QuerySet을 하나로 합치기
+            combined_chats = user_to_bot_chats | bot_to_user_chats
 
-        # 시간순으로 정렬
-        # sorted_chats = combined_chats.order_by('time_stamp')
-        print("sorted_chats: ", combined_chats)
+            # 시간순으로 정렬
+            # sorted_chats = combined_chats.order_by('time_stamp')
+            # print("sorted_chats: ", combined_chats)
 
-        serializer = ChatsListSerializer(
-            combined_chats,
-            many=True,
-            context={'user_id': user_id}
-        )
-        return Response(serializer.data)
+            serializer = ChatsListSerializer(
+                combined_chats,
+                many=True,
+                context={'user_id': user_id}
+            )
+            return Response(serializer.data)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
 
 
 @api_view(['GET'])
 def getBoardList(request):
     # get one board by board id
-    posts = Board.objects.all()
-    serializedData = BoardSerializer(posts, many=True)
-    return Response(serializedData.data)
+    try:
+        posts = Board.objects.all()
+        serializedData = BoardSerializer(posts, many=True)
+        return Response(serializedData.data)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 @api_view(["GET"])
@@ -127,32 +133,33 @@ def getBoardByWriter(request):
 
 @api_view(["POST"])
 def createBoard(request):
-    reqData = BoardSerializer(data=request.data)
+    try:
+        reqData = BoardSerializer(data=request.data)
 
-    if Board.objects.filter(**request.data).exists():
-        raise serializers.ValidationError('This data already exists')
+        if Board.objects.filter(**request.data).exists():
+            raise serializers.ValidationError('This data already exists')
 
-    if reqData.is_valid():
-        print("reqData: ", reqData)
-        reqData.save()
-        return Response(status=status.HTTP_200_OK, data="save success")
-    else:
-        print("error occured")
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        if reqData.is_valid():
+            # print("reqData: ", reqData)
+            reqData.save()
+            return Response(status=status.HTTP_200_OK, data="save success")
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 @api_view(["POST"])
-def updateBoard(request, boardId):
+def updateBoardById(request, boardId):
 
     board = Board.objects.get(id=boardId)
     reqData = BoardSerializer(instance=board, data=request.data)
 
-    if reqData.is_valid():
-        print("updated reqData: ", reqData)
-        reqData.save()
-        return Response(status=status.HTTP_200_OK, data="update success")
-    else:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    try:
+        if reqData.is_valid():
+            # print("updated reqData: ", reqData)
+            reqData.save()
+            return Response(status=status.HTTP_200_OK, data="update success")
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 @api_view(["POST"])
@@ -176,3 +183,37 @@ def searchByKeyword(reuqest, keyword):
         return Response(jsonData.data)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+
+@api_view(["POST"])
+def createComment(request):
+    try:
+        reqData = CommentSerializer(data=request.data)
+
+        if Comment.objects.filter(**request.data).exists():
+            raise serializers.ValidationError('This data already exists')
+
+        if reqData.is_valid():
+            # print("reqData: ", reqData)
+            reqData.save()
+            return Response(status=status.HTTP_200_OK, data="save success")
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@api_view(["GET"])
+def getCommentList(request, boardId):
+    try:
+        comments = Comment.objects.filter(
+            board_id=boardId)
+
+        returnData = CommentSerializer(comments, many=True)
+        return Response(returnData.data)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+'''
+Todo :
+comment delete, update
+'''

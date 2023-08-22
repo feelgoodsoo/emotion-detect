@@ -4,7 +4,6 @@ import { useRecoilState } from "recoil";
 import { keywordForSearch } from "../../../states/atoms";
 import { TextField, Button, Box } from "@mui/material";
 import { simpleFetch, urls } from "../../../utils/utilsBundle";
-import { accessToken } from "../../../utils/utilsBundle";
 import SimpleTable from "../../../components/SimpleTable/SimpleTable";
 
 function BoardHomePage() {
@@ -16,6 +15,8 @@ function BoardHomePage() {
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const accessToken = localStorage.getItem("accessToken");
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -26,10 +27,16 @@ function BoardHomePage() {
     setPage(0);
   };
 
+  // console.log("accessToken: ", accessToken);
   const getBoard = async () => {
-    let data = await simpleFetch(urls.boardListPath, "GET", "", accessToken);
-    if (data) {
-      setBoard(data);
+    try {
+      let data = await simpleFetch(urls.boardListPath, "GET", "", accessToken);
+      if (data) {
+        setBoard(data);
+      }
+    } catch (e) {
+      console.error(e);
+      alert("게시글을 가져오는 도중 에러가 발생하였습니다");
     }
   };
 

@@ -6,7 +6,7 @@ import { useRecoilState } from "recoil";
 import { simpleFetch } from "../../utils/utilsBundle";
 import { urls, RegisterInputs, LoginInputs } from "../../utils/utilsBundle";
 import { isAuthenticated } from "../../states/atoms";
-
+import { authToken } from "../../states/atoms";
 const AuthPage = () => {
   const initialValue = {
     username: "",
@@ -18,7 +18,7 @@ const AuthPage = () => {
   const [values, setValues] = useState(initialValue);
   const [registerMode, setRegisterMode] = useState(false);
   const [auth, setAuth] = useRecoilState(isAuthenticated);
-
+  const [accessToken, setAccessToken] = useRecoilState(authToken);
   let navigate = useNavigate();
 
   const handleRegister = async (e) => {
@@ -51,20 +51,28 @@ const AuthPage = () => {
       password: values.password,
     };
 
-    const loginRequest = await simpleFetch(
-      urls.loginPath,
-      "POST",
-      JSON.stringify(loginParams),
-      ""
-    );
+    try {
+      const loginRequest = await simpleFetch(
+        urls.loginPath,
+        "POST",
+        JSON.stringify(loginParams),
+        ""
+      );
 
-    const { access, refresh, user } = loginRequest;
-    localStorage.setItem("accessToken", access);
-    localStorage.setItem("refreshToken", refresh);
-    localStorage.setItem("userInfo", JSON.stringify(user));
-    setAuth(true);
-    console.log("login success");
-    //return navigate("/chat");
+      const { access, refresh, user } = loginRequest;
+      localStorage.setItem("accessToken", access);
+      localStorage.setItem("refreshToken", refresh);
+      localStorage.setItem("userInfo", JSON.stringify(user));
+      setAccessToken(access);
+      setAuth(true);
+
+      console.log("login success");
+      return navigate("/chat");
+    } catch (e) {
+      console.error(e);
+      alert("로그인 도중 에러가 발생하였습니다");
+      setAccessToken("");
+    }
   };
 
   const onChange = (e) => {

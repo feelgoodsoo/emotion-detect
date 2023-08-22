@@ -3,28 +3,35 @@ import { useNavigate } from "react-router-dom";
 import { TextField } from "@mui/material";
 import { Button, Box } from "@mui/material";
 import { simpleFetch, urls } from "../../../utils/utilsBundle";
-import { accessToken, userInfo } from "../../../utils/utilsBundle";
+
 function BoardCreatePage() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const navigate = useNavigate();
   //console.log(userInfo);
+  const accessToken = localStorage.getItem("accessToken");
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
   const sendData = async () => {
-    const params = {
-      title: `${title}`,
-      content: `${content}`,
-      writer: `${userInfo.username}`,
-    };
+    try {
+      const params = {
+        title: `${title}`,
+        content: `${content}`,
+        writer: `${userInfo.username}`,
+      };
 
-    let data = await simpleFetch(
-      urls.boardCreatePath,
-      "POST",
-      JSON.stringify(params),
-      accessToken
-    );
-    if (data) {
-      navigate("/board");
+      let data = await simpleFetch(
+        urls.boardCreatePath,
+        "POST",
+        JSON.stringify(params),
+        accessToken
+      );
+      if (data) {
+        navigate("/board");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("글 작성 처리 중에 에러가 발생하였습니다");
     }
   };
 

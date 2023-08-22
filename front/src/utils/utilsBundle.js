@@ -48,12 +48,14 @@ export const urls = {
   chatSendPath: "http://127.0.0.1:8000/api/chat/post/", // ChatPage
   boardListPath: "http://127.0.0.1:8000/api/board/get/list/", // BoardHomePage
   boardCreatePath: "http://127.0.0.1:8000/api/board/post/create/", // BoardCreatePage
-  boardGetByIdPath: "http://127.0.0.1:8000/api/board/get/", // BoardDetailPage. need to add id at end of url
-  boardDeletePath: "http://127.0.0.1:8000/api/board/post/delete/", // BoardDetailPage. need to add id at end of url
+  boardGetByIdPath: "http://127.0.0.1:8000/api/board/get/", // BoardDetailPage. need to add boardId at the end of url
+  boardDeletePath: "http://127.0.0.1:8000/api/board/post/delete/", // BoardDetailPage. need to add boardId at the end of url
   boardGetByWriterPath: "http://127.0.0.1:8000/api/board/get/bywriter/", // BoardMyPostPage
-  boardSearchPath: "http://127.0.0.1:8000/api/board/get/searchByKeyword/", // BoardSearchPage. need to add keyword at end or url
-  boardUpdateByIdPath: "http://127.0.0.1:8000/api/board/post/update/", // BoardUpdatePage. need to add id at end or url
+  boardSearchPath: "http://127.0.0.1:8000/api/board/get/searchByKeyword/", // BoardSearchPage. need to add keyword at the end or url
+  boardUpdateByIdPath: "http://127.0.0.1:8000/api/board/post/update/", // BoardUpdatePage. need to add boardId at the end or url
   tokenRefreshPath: "http://127.0.0.1:8000/dj-rest-auth/token/refresh/", // Nav
+  commentCreatePath: "http://127.0.0.1:8000/api/comment/post/create/", // BoardDetailPage
+  commentListPath: "http://127.0.0.1:8000/api/comment/get/list/", //BoardDetailPage. need to add boardId at the end of url
 };
 
 export const logoutHandler = async () => {
@@ -132,6 +134,3 @@ export const LoginInputs = [
     required: true,
   },
 ];
-
-export const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-export const accessToken = localStorage.getItem("accessToken");

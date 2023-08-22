@@ -2,16 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { TextField } from "@mui/material";
 import { Button, Box } from "@mui/material";
-import {
-  accessToken,
-  simpleFetch,
-  urls,
-  userInfo,
-} from "../../../utils/utilsBundle";
+import { simpleFetch, urls } from "../../../utils/utilsBundle";
 
 function BoardUpdatePage() {
   const navigate = useNavigate();
   const { id } = useParams();
+
+  const accessToken = localStorage.getItem("accessToken");
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
   const [board, setBoard] = useState({
     id: 0,
@@ -21,36 +19,46 @@ function BoardUpdatePage() {
   });
 
   const getBoard = async () => {
-    let data = await simpleFetch(
-      urls.boardGetByIdPath + `${id}/`,
-      "GET",
-      "",
-      accessToken
-    );
-    if (data) {
-      setBoard(data);
+    try {
+      let data = await simpleFetch(
+        urls.boardGetByIdPath + `${id}/`,
+        "GET",
+        "",
+        accessToken
+      );
+      if (data) {
+        setBoard(data);
+      }
+    } catch (e) {
+      alert("게시글을 가져오는 도중 에러가 발생하였습니다");
+      console.error(e);
     }
   };
 
   const updateBoard = async () => {
-    if (window.confirm("게시글을 수정하겠습니까?")) {
-      const params = {
-        id: `${board.id}`,
-        title: `${board.title}`,
-        content: `${board.content}`,
-        writer: `${userInfo.username}`,
-      };
+    try {
+      if (window.confirm("게시글을 수정하겠습니까?")) {
+        const params = {
+          id: `${board.id}`,
+          title: `${board.title}`,
+          content: `${board.content}`,
+          writer: `${userInfo.username}`,
+        };
 
-      let data = await simpleFetch(
-        urls.boardUpdateByIdPath + `${board.id}`,
-        "POST",
-        JSON.stringify(params),
-        accessToken
-      );
-      if (data) {
-        alert("수정되었습니다");
-        navigate(`/board/${id}`);
+        let data = await simpleFetch(
+          urls.boardUpdateByIdPath + `${board.id}`,
+          "POST",
+          JSON.stringify(params),
+          accessToken
+        );
+        if (data) {
+          alert("수정되었습니다");
+          navigate(`/board/${id}`);
+        }
       }
+    } catch (e) {
+      console.error(e);
+      alert("게시글을 업데이트 하는 도중 에러가 발생하였습니다");
     }
   };
 

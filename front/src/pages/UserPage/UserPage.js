@@ -1,36 +1,36 @@
 import React, { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { authTokens, test } from "../../states/atoms";
-import { redirect, useNavigate } from "react-router-dom";
-
+import { authTokens } from "../../states/atoms";
+import { useNavigate } from "react-router-dom";
+import { logoutHandler } from "../../utils/utilsBundle";
+import { Box, Button } from "@mui/material";
 function UserPage() {
+  const accessToken = localStorage.getItem("accessToken");
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const navigate = useNavigate();
-  const [userInfo, setUserInfo] = useRecoilState(authTokens);
 
   //console.log(typeof userInfo);
 
-  const logoutHandler = async () => {
-    console.log("logout button clicked");
-    localStorage.removeItem("authTokens");
-    setUserInfo(null);
-    return navigate("/");
+  const logOut = () => {
+    logoutHandler();
+    navigate("/");
   };
 
   return (
     <>
-      <div>
-        username :{" "}
-        {typeof userInfo == "string"
-          ? JSON.parse(userInfo).user.username
-          : userInfo.user.username}
-      </div>
-      <div>
-        email :{" "}
-        {typeof userInfo == "string"
-          ? JSON.parse(userInfo).user.email
-          : userInfo.user.email}
-      </div>
-      <button onClick={logoutHandler}>Logout</button>
+      <h2 style={{ textAlign: "center", marginTop: "30px" }}>
+        username : {userInfo.username}
+      </h2>
+      <h2 style={{ textAlign: "center" }}>email :{userInfo.email}</h2>
+      <Box textAlign="center">
+        <Button
+          onClick={logOut}
+          variant="contained"
+          sx={{ mt: 3, width: "15%" }}
+        >
+          logout
+        </Button>
+      </Box>
     </>
   );
 }
