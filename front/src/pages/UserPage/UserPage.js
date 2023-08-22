@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { authTokens } from "../../states/atoms";
 import { useNavigate } from "react-router-dom";
 import { logoutHandler } from "../../utils/utilsBundle";
 import { Box, Button } from "@mui/material";
