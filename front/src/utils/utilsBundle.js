@@ -40,22 +40,23 @@ export async function simpleFetch(URL, method, JSONbody, authKey) {
   }
   return response;
 }
+`/dj-rest-auth/login`;
 
 export const urls = {
-  loginPath: "http://127.0.0.1:8000/dj-rest-auth/login/", // AuthPage
-  registerPath: "http://127.0.0.1:8000/dj-rest-auth/registration/", // AuthPage
-  chatListPath: "http://127.0.0.1:8000/api/chat/list/", // ChatPage
-  chatSendPath: "http://127.0.0.1:8000/api/chat/post/", // ChatPage
-  boardListPath: "http://127.0.0.1:8000/api/board/get/list/", // BoardHomePage
-  boardCreatePath: "http://127.0.0.1:8000/api/board/post/create/", // BoardCreatePage
-  boardGetByIdPath: "http://127.0.0.1:8000/api/board/get/", // BoardDetailPage. need to add boardId at the end of url
-  boardDeletePath: "http://127.0.0.1:8000/api/board/post/delete/", // BoardDetailPage. need to add boardId at the end of url
-  boardGetByWriterPath: "http://127.0.0.1:8000/api/board/get/bywriter/", // BoardMyPostPage
-  boardSearchPath: "http://127.0.0.1:8000/api/board/get/searchByKeyword/", // BoardSearchPage. need to add keyword at the end or url
-  boardUpdateByIdPath: "http://127.0.0.1:8000/api/board/post/update/", // BoardUpdatePage. need to add boardId at the end or url
-  tokenRefreshPath: "http://127.0.0.1:8000/dj-rest-auth/token/refresh/", // Nav
-  commentCreatePath: "http://127.0.0.1:8000/api/comment/post/create/", // BoardDetailPage
-  commentListPath: "http://127.0.0.1:8000/api/comment/get/list/", //BoardDetailPage. need to add boardId at the end of url
+  loginPath: `${process.env.REACT_APP_SERVER_URL}/dj-rest-auth/login/`, // AuthPage
+  registerPath: `${process.env.REACT_APP_SERVER_URL}/dj-rest-auth/registration/`, // AuthPage
+  chatListPath: `${process.env.REACT_APP_SERVER_URL}/api/chat/list/`, // ChatPage
+  chatSendPath: `${process.env.REACT_APP_SERVER_URL}/api/chat/post/`, // ChatPage
+  boardListPath: `${process.env.REACT_APP_SERVER_URL}/api/board/get/list/`, // BoardHomePage
+  boardCreatePath: `${process.env.REACT_APP_SERVER_URL}/api/board/post/create/`, // BoardCreatePage
+  boardGetByIdPath: `${process.env.REACT_APP_SERVER_URL}/api/board/get/`, // BoardDetailPage. need to add boardId at the end of url
+  boardDeletePath: `${process.env.REACT_APP_SERVER_URL}/api/board/post/delete/`, // BoardDetailPage. need to add boardId at the end of url
+  boardGetByWriterPath: `${process.env.REACT_APP_SERVER_URL}/api/board/get/bywriter/`, // BoardMyPostPage
+  boardSearchPath: `${process.env.REACT_APP_SERVER_URL}/api/board/get/searchByKeyword/`, // BoardSearchPage. need to add keyword at the end or url
+  boardUpdateByIdPath: `${process.env.REACT_APP_SERVER_URL}/api/board/post/update/`, // BoardUpdatePage. need to add boardId at the end or url
+  tokenRefreshPath: `${process.env.REACT_APP_SERVER_URL}/dj-rest-auth/token/refresh/`, // Nav
+  commentCreatePath: `${process.env.REACT_APP_SERVER_URL}/api/comment/post/create/`, // BoardDetailPage
+  commentListPath: `${process.env.REACT_APP_SERVER_URL}/api/comment/get/list/`, //BoardDetailPage. need to add boardId at the end of url
 };
 
 export const logoutHandler = async () => {

@@ -31,15 +31,15 @@ def ChatHandler(request):
         chatObj.save()
 
         # gpt request
-        openai.api_key = getEnvAttr('OPENAI_API_KEY')
-        messages = [
-            {"role": "user", "content": content}
-        ]
+        # openai.api_key = getEnvAttr('OPENAI_API_KEY')
+        # messages = [
+        #     {"role": "user", "content": content}
+        # ]
 
-        completion = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=messages
-        )
+        # completion = openai.ChatCompletion.create(
+        #     model="gpt-3.5-turbo",
+        #     messages=messages
+        # )
 
         # completion.choices[0].message.content
         chat_response = "hello from jango"

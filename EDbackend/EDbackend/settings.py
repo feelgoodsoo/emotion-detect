@@ -81,7 +81,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:3000', 'http://localhost:3001']
+CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:3000',
+                         'http://localhost:3001', 'http://localhost:80', "http://localhost:8080", 'http://127.0.0.1', 'http://localhost']
 CORS_ALLOW_CREDENTIALS = True
 ROOT_URLCONF = 'EDbackend.urls'
 
@@ -118,7 +119,7 @@ DATABASES = {
         'NAME': 'python-db',
         'USER': 'python-user',
         'PASSWORD': 'python-pw',
-        'HOST': 'localhost',
+        'HOST': 'db',  # 'localhost',
         'PORT': '5432',
     }
 }
