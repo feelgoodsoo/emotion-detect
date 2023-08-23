@@ -9,7 +9,7 @@
 
 ### handle your cors origin issue
 
-2. by filling CORS_ORIGIN_WHITELIST in EDbackend/EDbackend/settings.py
+2. by filling CORS_ORIGIN_WHITELIST, ALLOWED_HOSTS in EDbackend/EDbackend/settings.py
 
 ### RUN
 
