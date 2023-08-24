@@ -25,3 +25,7 @@ check out nginx/nginx-setup.conf
 check out EDbackend/EDbackend/settings.py
 
 ### if you wanna know more about this project, check out project-introduce.pdf
+
+<img src="./project-capture/facedetect1.png" height="250"/>
+<img src="./project-capture/facedetect2.png" height="250"/>
+<img src="./project-capture/chat.png" height="250"/>
