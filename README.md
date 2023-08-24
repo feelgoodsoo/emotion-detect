@@ -23,3 +23,5 @@ docker-compose up -d
 
 check out nginx/nginx-setup.conf
 check out EDbackend/EDbackend/settings.py
+
+### if you wanna know more about this project, check out project-introduce.pdf
