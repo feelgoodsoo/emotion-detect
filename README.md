@@ -1,9 +1,9 @@
-# This is Demo
+# This is Demo. To start,
 
-### To start, 1. add .env
+### 1. add .env
 
 - add .env in front folder. write REACT_APP_SERVER_URL.  ex -> REACT_APP_SERVER_URL=http://127.0.0.1:8000
-- add .env in EDbackend folder.write OPENAI_API_KEY. (see more about in EDbackend/api/viws.py.
+- add .env in EDbackend folder. write OPENAI_API_KEY. (see more about in EDbackend/api/viws.py.
 now i do hard coding response. change it.)
 
 ### 2. handle your cors origin issue
