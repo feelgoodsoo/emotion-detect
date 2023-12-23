@@ -41,10 +41,7 @@ def ChatHandler(request):
             messages=messages
         )
 
-        # completion.choices[0].message.content
-        # "hello from jango"
-        # completion.choices[0].message.content
-        chat_response = "hello from jango"
+        chat_response = completion.choices[0].message.content #"hello from jango"
         # print(f'ChatGPT: {chat_response}')
 
         # response 객체 생성

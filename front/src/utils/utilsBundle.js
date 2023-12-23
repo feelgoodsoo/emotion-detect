@@ -40,7 +40,6 @@ export async function simpleFetch(URL, method, JSONbody, authKey) {
   }
   return response;
 }
-`/dj-rest-auth/login`;
 
 export const urls = {
   loginPath: `${process.env.REACT_APP_SERVER_URL}/dj-rest-auth/login/`, // AuthPage
